@@ -1,0 +1,111 @@
+{
+	"code": 200,
+	"data": [
+		{
+			"id": 1,
+			"sort": 1,
+			"path": "/home/index",
+			"component": "/home/index",
+			"time": "2022-05-31 17:26:07",
+			"status": 1,
+			"parent": 0,
+			"menuType": 2,
+			"metaTitle": "首页",
+			"metaIcon": "HomeFilled",
+			"metaIsKeepAlive": true
+		},
+		{
+			"id": 2,
+			"sort": 1,
+			"path": "/menu/index",
+			"component": "/menu/index",
+			"time": "2022-05-31 17:26:07",
+			"status": 1,
+			"parent": 0,
+			"menuType": 2,
+			"metaTitle": "菜单管理",
+			"metaIcon": "HomeFilled",
+			"metaIsKeepAlive": true
+		},
+		{
+			"id": 3,
+			"sort": 1,
+			"path": "/bnbStrategy",
+			"time": "2022-05-31 17:26:07",
+			"status": 1,
+			"parent": 0,
+			"menuType": 1,
+			"metaTitle": "币安策略",
+			"metaIcon": "HomeFilled",
+			"metaIsKeepAlive": true,
+			"children": [
+				{
+					"id": 4,
+					"sort": 1,
+					"path": "/bnbStrategy/search",
+					"component": "/bnbStrategy/search/index",
+					"time": "2022-05-31 17:26:07",
+					"status": 1,
+					"parent": 3,
+					"menuType": 2,
+					"metaTitle": "策略查询",
+					"metaIcon": "HomeFilled",
+					"metaIsKeepAlive": true
+				},
+				{
+					"id": 5,
+					"sort": 1,
+					"path": "/bnbStrategy/accountConfig",
+					"component": "/bnbStrategy/accountConfig/index",
+					"time": "2022-05-31 17:26:07",
+					"status": 1,
+					"parent": 3,
+					"menuType": 2,
+					"metaTitle": "账户配置",
+					"metaIcon": "HomeFilled",
+					"metaIsKeepAlive": true
+				},
+				{
+					"id": 6,
+					"sort": 1,
+					"path": "/bnbStrategy/paramUpdate",
+					"component": "/bnbStrategy/paramUpdate/index",
+					"time": "2022-05-31 17:26:07",
+					"status": 1,
+					"parent": 3,
+					"menuType": 2,
+					"metaTitle": "参数修改",
+					"metaIcon": "HomeFilled",
+					"metaIsKeepAlive": true
+				},
+				{
+					"id": 7,
+					"sort": 1,
+					"path": "/bnbStrategy/orderSearch",
+					"component": "/bnbStrategy/orderSearch/index",
+					"time": "2022-05-31 17:26:07",
+					"status": 1,
+					"parent": 3,
+					"menuType": 2,
+					"metaTitle": "订单查询",
+					"metaIcon": "HomeFilled",
+					"metaIsKeepAlive": true
+				},
+				{
+					"id": 8,
+					"sort": 1,
+					"path": "/bnbStrategy/hedgeSearch",
+					"component": "/bnbStrategy/hedgeSearch/index",
+					"time": "2022-05-31 17:26:07",
+					"status": 1,
+					"parent": 3,
+					"menuType": 2,
+					"metaTitle": "对冲单查询",
+					"metaIcon": "HomeFilled",
+					"metaIsKeepAlive": true
+				}
+			]
+		}
+	],
+	"msg": "成功"
+}

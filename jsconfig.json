@@ -1,0 +1,6 @@
+{
+	// 全局import警告
+	"noImplicitAny": false,
+	// tsx警告
+	"allowJs": true
+}
