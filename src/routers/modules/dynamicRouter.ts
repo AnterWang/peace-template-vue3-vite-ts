@@ -16,9 +16,9 @@ export const initDynamicRouter = async () => {
 	const authStore = AuthStore();
 	const globalStore = GlobalStore();
 	try {
-		// 1.获取菜单列表 && 按钮权限（可合并到一个接口获取，根据后端不同可自行改造）
+		// 1.获取路由 && 个人信息、按钮权限等（根据后端不同可自行改造）
 		await authStore.getAuthMenuList();
-		await authStore.getAuthButtonList();
+		// await authStore.getAuthButtonList();
 
 		// 2.判断当前用户有没有菜单权限
 		if (!authStore.authMenuListGet.length) {
@@ -39,7 +39,7 @@ export const initDynamicRouter = async () => {
 			if (item.component && isType(item.component) == "string") {
 				item.component = modules["/src/views" + item.component + ".vue"];
 			}
-			if (item.meta?.isFull) {
+			if (item.meta?.isFull) { // 是否为非当前 layout 路由
 				router.addRoute(item);
 			} else {
 				router.addRoute("layout", item);
@@ -49,7 +49,7 @@ export const initDynamicRouter = async () => {
 		// 4.最后添加 notFoundRouter
 		router.addRoute(notFoundRouter);
 	} catch (error) {
-		// 💢 当按钮 || 菜单请求出错时，重定向到登陆页
+		//  当按钮 || 菜单请求出错时，重定向到登陆页
 		globalStore.setToken("");
 		router.replace(LOGIN_URL);
 		return Promise.reject(error);

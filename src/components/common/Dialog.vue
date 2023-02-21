@@ -1,6 +1,6 @@
 <template>
-	<el-dialog v-model="dialogVisible" :title="title" v-bind="$attrs" destroy-on-close lock-scroll draggable
-		@close="close">
+	<el-dialog v-model="dialogVisible" :title="title" v-bind="$attrs" destroy-on-close lock-scroll @close="close"
+		class="common-dialog">
 		<template #default>
 			<slot></slot>
 		</template>
@@ -10,14 +10,14 @@
 		</template>
 		<template v-if="!slots.footer && showFooter" #footer>
 			<div>
-				<el-button @click="cancel">取消</el-button>
-				<el-button type="primary" @click="confirm">确认</el-button>
+				<el-button @click="cancel">{{ cancelText }}</el-button>
+				<el-button type="primary" @click="confirm" :loading="confirmLoading">{{ confirmText }}</el-button>
 			</div>
 		</template>
 	</el-dialog>
 </template>
 
-<script setup lang="ts" name="ImportExcel">
+<script setup lang="ts">
 import { computed, useAttrs, useSlots } from "vue";
 
 const props = defineProps({
@@ -32,6 +32,18 @@ const props = defineProps({
 	showFooter: {
 		type: Boolean,
 		default: true
+	},
+	confirmText: {
+		type: String,
+		default: '确认'
+	},
+	cancelText: {
+		type: String,
+		default: '取消'
+	},
+	confirmLoading: {
+		type: Boolean,
+		default: false
 	}
 });
 const emits = defineEmits(['update:show', 'cancel', 'confirm', 'close']);
@@ -66,3 +78,14 @@ const close = () => {
 	emits('close')
 }
 </script>
+
+<style lang="scss">
+/* 垂直水平居中，如开启dialog拖动，第一次拖动会有卡一下 */
+.el-overlay-dialog {
+	.common-dialog {
+		top: 40%;
+		margin: 0 auto !important;
+		transform: translateY(-40%);
+	}
+}
+</style>

@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
 import { AuthState } from "@/stores/interface";
-import { getFlatArr } from "@/utils/util";
-import { getAuthButtonListApi, getAuthMenuListApi } from "@/api/modules/login";
-import { getShowMenuList, getAllBreadcrumbList } from "@/utils/util";
+import { getShowMenuList, getAllBreadcrumbList, getFlatArr } from "@/utils/util";
+import { getRouterList } from "@/api/login";
 
 // AuthStore
 export const AuthStore = defineStore({
@@ -10,16 +9,16 @@ export const AuthStore = defineStore({
 	state: (): AuthState => ({
 		// 当前页面的 router name，用来做按钮权限筛选
 		routeName: "",
+		// 菜单权限列表
+		authMenuList: [],
 		// 按钮权限列表
 		authButtonList: {},
-		// 菜单权限列表
-		authMenuList: []
 	}),
 	getters: {
-		// 按钮权限列表
-		authButtonListGet: state => state.authButtonList,
 		// 后端返回的菜单列表 ==> 这里没有经过任何处理
 		authMenuListGet: state => state.authMenuList,
+		// 按钮权限列表
+		authButtonListGet: state => state.authButtonList,
 		// 后端返回的菜单列表 ==> 左侧菜单栏渲染，需要去除 isHide == true
 		showMenuListGet: state => getShowMenuList(state.authMenuList),
 		// 扁平化之后的一维数组路由，主要用来添加动态路由
@@ -28,14 +27,9 @@ export const AuthStore = defineStore({
 		breadcrumbListGet: state => getAllBreadcrumbList(state.authMenuList)
 	},
 	actions: {
-		// getAuthButtonList
-		async getAuthButtonList() {
-			const { data } = await getAuthButtonListApi();
-			this.authButtonList = data;
-		},
-		// getAuthMenuList
+		// 获取路由信息
 		async getAuthMenuList() {
-			const { data } = await getAuthMenuListApi();
+			const { data } = await getRouterList();
 			// 过滤后端返回的路由
 			const disposeRoute = (list: any) => {
 				return list.map((item: any) => {
@@ -43,18 +37,19 @@ export const AuthStore = defineStore({
 					return {
 						...item,
 						children: haveChildren ? disposeRoute(item.children) : [],
-						meta: {
-							title: item.metaTitle,
-							icon: item.metaIcon,
-							isKeepAlive: item.metaIsKeepAlive
-						},
-						name: item.path.replace(/\//g, ''),
 						// todo 
-						// redirect
+						// name: item.path.replace(/\//g, ''),
+						// redirect ?
 					}
 				})
 			}
 			this.authMenuList = disposeRoute(data);
+			console.log(this.authMenuList)
+		},
+		// getAuthButtonList
+		async getAuthButtonList() {
+			// const { data } = await getAuthButtonListApi();
+			// this.authButtonList = data;
 		},
 		// setRouteName
 		async setRouteName(name: string) {

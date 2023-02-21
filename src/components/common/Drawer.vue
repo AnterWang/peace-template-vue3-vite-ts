@@ -10,14 +10,14 @@
 		</template>
 		<template v-if="!slots.footer && showFooter" #footer>
 			<div>
-				<el-button @click="cancel">取消</el-button>
-				<el-button type="primary" @click="confirm">确认</el-button>
+				<el-button @click="cancel">{{ cancelText }}</el-button>
+				<el-button type="primary" @click="confirm" :loading="confirmLoading">{{ confirmText }}</el-button>
 			</div>
 		</template>
 	</el-drawer>
 </template>
 
-<script setup lang="ts" name="ImportExcel">
+<script setup lang="ts">
 import { computed, useAttrs, useSlots } from "vue";
 
 const props = defineProps({
@@ -33,7 +33,19 @@ const props = defineProps({
 		type: Boolean,
 		default: true
 	},
-	width: [String, Number] // drawer 的 size 改写为 width
+	width: [String, Number], // drawer 的 size 改写为 width
+	confirmText: {
+		type: String,
+		default: '确认'
+	},
+	cancelText: {
+		type: String,
+		default: '取消'
+	},
+	confirmLoading: {
+		type: Boolean,
+		default: false
+	}
 });
 const emits = defineEmits(['update:show', 'cancel', 'confirm', 'close']);
 

@@ -30,6 +30,8 @@ import pinia from "@/stores/index";
 import "virtual:svg-icons-register";
 // errorHandler
 import errorHandler from "@/utils/errorHandler";
+// plugins
+import plugins from '@/plugins/index'
 
 const app = createApp(App);
 
@@ -40,4 +42,4 @@ Object.keys(Icons).forEach(key => {
 	app.component(key, Icons[key as keyof typeof Icons]);
 });
 
-app.use(router).use(pinia).use(directives).use(ElementPlus).mount("#app");
+app.use(router).use(pinia).use(directives).use(ElementPlus).use(plugins).mount("#app");

@@ -1,5 +1,5 @@
 {
-	"name": "vue3-vite-ts-template",
+	"name": "vue-vite-mgt",
 	"private": true,
 	"version": "0.0.1",
 	"author": "wangzhipeng",
@@ -17,19 +17,25 @@
 		"commit": "git pull && git add -A && git-cz && git push"
 	},
 	"dependencies": {
+		"@codemirror/lang-javascript": "^6.1.2",
+		"@codemirror/lang-json": "^6.0.1",
+		"@codemirror/lang-sql": "^6.3.3",
+		"@codemirror/theme-one-dark": "^6.1.0",
 		"@element-plus/icons-vue": "^1.1.4",
 		"@vueuse/core": "^8.0.1",
 		"axios": "^0.27.2",
+		"codemirror": "^6.0.1",
 		"element-plus": "^2.2.17",
+		"file-saver": "^2.0.5",
 		"js-md5": "^0.7.3",
 		"mitt": "^3.0.0",
-		"monaco-editor": "^0.34.1",
 		"nprogress": "^0.2.0",
 		"pinia": "^2.0.12",
 		"pinia-plugin-persistedstate": "^1.6.1",
 		"qs": "^6.11.0",
 		"sortablejs": "^1.15.0",
 		"vue": "^3.2.37",
+		"vue-codemirror": "^6.1.1",
 		"vue-router": "^4.0.12",
 		"vue3-seamless-scroll": "^1.2.0",
 		"vuedraggable": "^4.1.0"

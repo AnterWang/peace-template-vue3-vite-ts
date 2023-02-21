@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import { GlobalStore } from "@/stores";
 import { AuthStore } from "@/stores/modules/auth";
 import { LOGIN_URL } from "@/enums/config";
@@ -23,7 +23,7 @@ import NProgress from "@/plugins/nprogress";
  * @param meta.isKeepAlive ==> 是否缓存 （默认：true）
  * */
 const router = createRouter({
-	history: createWebHashHistory(),
+	history: createWebHistory(),
 	routes: [...staticRouter, ...errorRouter],
 	strict: false,
 	scrollBehavior: () => ({ left: 0, top: 0 })

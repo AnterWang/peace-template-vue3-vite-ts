@@ -120,3 +120,8 @@ npm run commit
 - Firefox ｜ last 2 versions
 - Safari ｜ last 2 versions
 - Edge ｜ last 2 versions
+
+### 参考资料
+
+- proTable 组件 ｜ Pro-Table 文档: https://juejin.cn/post/7166068828202336263
+- vue3+ts+vite 项目 ｜ https://github.com/HalseySpicy/Geeker-Admin
