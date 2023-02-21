@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { AuthState } from "@/stores/interface";
-import { getShowMenuList, getAllBreadcrumbList, getFlatArr } from "@/utils/util";
+import { getShowMenuList, getAllBreadcrumbList, getFlatArr } from "@/utils/menu";
 import { getRouterList } from "@/api/login";
 
 // AuthStore
@@ -30,14 +30,15 @@ export const AuthStore = defineStore({
 		// 获取路由信息
 		async getAuthMenuList() {
 			const { data } = await getRouterList();
-			// 过滤后端返回的路由
+			// 过滤后端返回的路由 - 递归 
+			// 此步骤是将后端接口返回的路由数据过滤为前端可用的路由menu数据，数据格式可参考 mock/router/dynamicRouter 的数据格式
 			const disposeRoute = (list: any) => {
 				return list.map((item: any) => {
 					const haveChildren = Array.isArray(item.children) && item.children.length > 0;
 					return {
 						...item,
 						children: haveChildren ? disposeRoute(item.children) : [],
-						// todo 
+						// todo ...
 						// name: item.path.replace(/\//g, ''),
 						// redirect ?
 					}
