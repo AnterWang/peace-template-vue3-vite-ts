@@ -6,6 +6,11 @@ import { routes, userinfo } from "@/mock/login.js"; // mock
 
 // 用户登录
 export const loginApi = data => {
+	return new Promise((resolve, reject) => {
+		setTimeout(() => {
+			resolve({ code: 200, msg: "成功", data: { access_token: "12313123asdasddasd" } });
+		}, 1000);
+	});
 	return request({
 		url: "/login",
 		method: "post",

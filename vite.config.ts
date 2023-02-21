@@ -41,10 +41,10 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
 			cors: true,
 			// 跨域代理配置
 			proxy: {
-				"/api": {
+				"/dev-api": {
 					target: "https://mock.mengxuegu.com/mock/63aab564fef1752f04c001f2", // easymock
 					changeOrigin: true,
-					rewrite: path => path.replace(/^\/api/, "")
+					rewrite: path => path.replace(/^\/dev-api/, "")
 				}
 			}
 		},
