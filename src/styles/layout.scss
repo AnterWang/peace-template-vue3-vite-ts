@@ -1,0 +1,83 @@
+// * 当前页面最大化 css
+.main-maximize {
+	.aside-split,
+	.el-aside,
+	.el-header,
+	.el-footer,
+	.tabs-box {
+		display: none !important;
+	}
+}
+
+// * card 卡片样式
+.card {
+	box-sizing: border-box;
+	padding: 20px;
+	overflow-x: hidden;
+	background-color: var(--el-fill-color-blank);
+	border: 1px solid var(--el-border-color-light);
+	border-radius: 4px;
+	box-shadow: 0 0 12px rgb(0 0 0 / 5%);
+}
+
+// * 不需要 card 卡片样式（在组件内使用 proTable 会使用到）
+.no-card {
+	.card {
+		padding: 0;
+		background-color: transparent;
+		border: none;
+		border-radius: 0;
+		box-shadow: none;
+	}
+}
+
+// * content-box (常用内容盒子)
+.content-box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 100%;
+	.text {
+		margin: 20px 0 30px;
+		font-size: 23px;
+		font-weight: bold;
+		color: var(--el-text-color-regular);
+	}
+	.el-descriptions {
+		width: 100%;
+		padding: 40px 0 0;
+		.el-descriptions__title {
+			font-size: 18px;
+		}
+		.el-descriptions__label {
+			width: 200px;
+		}
+	}
+}
+
+// * main-box (树形表格 treeFilter 页面会使用，左右布局 flex)
+.main-box {
+	display: flex;
+	width: 100%;
+	height: 100%;
+	.table-box {
+		width: calc(100% - 230px);
+	}
+}
+
+// 此布局表单可用，高度自适应拉伸
+.table-layout {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	width: 100%;
+	height: 100%;
+
+	> .pro-table {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+	}
+}

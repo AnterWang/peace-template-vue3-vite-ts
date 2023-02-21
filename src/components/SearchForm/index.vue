@@ -83,3 +83,41 @@ const showCollapse = computed(() => {
 	return show;
 });
 </script>
+
+<style lang="scss" scoped>
+// table-search 表格搜索样式
+.table-search {
+	padding: 18px 18px 0;
+	margin-bottom: 10px;
+
+	.el-form {
+
+		.el-input,
+		.el-select,
+		.el-cascader,
+		.el-date-editor--timerange,
+		.el-date-editor--datetimerange,
+		.el-date-editor--daterange {
+			width: 100%;
+		}
+
+		// 去除时间选择器上下 padding
+		.el-range-editor.el-input__wrapper {
+			padding: 0 10px;
+		}
+
+		// el-select 为多选时不换行显示
+		.el-select__tags {
+			overflow: hidden;
+			white-space: nowrap;
+		}
+	}
+
+	.operation {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		margin-bottom: 18px;
+	}
+}
+</style>

@@ -1,9 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
-// reset style sheet
-import "@/styles/reset.scss";
-// CSS common style sheet
-import "@/styles/common.scss";
+// 引入 style css
+import "@/styles/index.scss";
 // iconfont css
 import "@/assets/iconfont/iconfont.scss";
 // font css
@@ -16,10 +14,6 @@ import * as Icons from "@element-plus/icons-vue";
 import "element-plus/dist/index.css";
 // element dark(内置暗黑模式)
 import "element-plus/theme-chalk/dark/css-vars.css";
-// custom element dark(自定义暗黑模式)
-import "@/styles/theme/element-dark.scss";
-// custom element css
-import "@/styles/element.scss";
 // custom directives
 import directives from "@/directives/index";
 // vue Router

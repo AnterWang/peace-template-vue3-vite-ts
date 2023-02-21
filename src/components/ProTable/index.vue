@@ -1,10 +1,9 @@
 <template>
-	<!-- 查询表单 card -->
 	<SearchForm v-if="isShowSearch" :search="search" :reset="reset" :searchParam="searchParam" :columns="searchColumns"
 		:searchCol="searchCol" v-show="searchShow" />
 
-	<!-- 表格内容 card -->
-	<div class="card table">
+	<!-- 表格内容 -->
+	<div class="pro-table card">
 		<!-- 表格头部 操作按钮 -->
 		<div class="table-header">
 			<div class="header-button-lf">
@@ -71,9 +70,6 @@ import TableColumn from "./components/TableColumn.vue";
 
 // 初始化的时候需要做的事情就是 设置表单查询默认值 && 获取表格数据(reset函数的作用刚好是这两个功能)
 onMounted(() => {
-	setTimeout(() => {
-		console.log(tableData.value)
-	}, 1000)
 	reset();
 });
 
@@ -180,3 +176,79 @@ const openColSetting = () => {
 // 暴露给父组件的参数和方法(外部需要什么，都可以从这里暴露出去)
 defineExpose({ element: tableRef, tableData, searchParam, pageable, getTableList, clearSelection, enumMap });
 </script>
+
+<style lang="scss">
+.pro-table {
+
+	/* stylelint-disable-next-line scss/double-slash-comment-empty-line-before */
+	// 表格 header 样式
+	.table-header {
+		.header-button-lf {
+			float: left;
+		}
+
+		.header-button-ri {
+			float: right;
+		}
+
+		.el-button {
+			margin-bottom: 15px;
+		}
+	}
+
+	// el-table 表格样式
+	.el-table {
+		flex: 1;
+
+		// 修复 safari 浏览器表格错位
+		table {
+			width: 100%;
+		}
+
+		.el-table__header th {
+			height: 45px;
+			font-size: 15px;
+			font-weight: bold;
+			color: var(--el-text-color-primary);
+			background: var(--el-fill-color-light);
+		}
+
+		.el-table__row {
+			height: 45px;
+			font-size: 14px;
+		}
+
+		// 设置 el-table 中 header 文字不换行，并省略
+		.el-table__header .el-table__cell>.cell {
+			white-space: nowrap;
+		}
+
+		// 解决表格数据为空时样式不居中问题(仅在element-plus中)
+		.el-table__empty-block {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+
+			.table-empty {
+				line-height: 30px;
+			}
+		}
+
+		// table 中 image 图片样式
+		.table-image {
+			width: 50px;
+			height: 50px;
+			border-radius: 50%;
+		}
+	}
+
+	// 表格 pagination 样式
+	.el-pagination {
+		display: flex;
+		justify-content: flex-end;
+		margin-top: 20px;
+	}
+
+}
+</style>
