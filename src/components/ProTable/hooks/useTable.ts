@@ -14,7 +14,7 @@ export const useTable = (
 	requestApi: (params: any) => Promise<any>,
 	requestParam: object = {},
 	requestPageName: any = [],
-	requestCallback?: (data: any) => any
+	requestCallback?: (data: any) => any,
 ) => {
 	const state = reactive<Table.TableStateProps>({
 		// 表格数据
@@ -28,10 +28,6 @@ export const useTable = (
 			// 总条数
 			total: 0
 		},
-		// 查询参数(只包括查询)
-		searchParam: {},
-		// 初始化默认的查询参数
-		searchInitParam: {},
 		// 总参数(包含分页和查询参数)
 		totalParam: {},
 		// 加载状态
@@ -53,7 +49,7 @@ export const useTable = (
 			// 默认格式为 { code, rows, total, msg } 不是的话，用requestCallback处理
 			requestCallback && (res = requestCallback(res));
 			state.tableData = res?.rows || []
-			console.log(res)
+
 			// 解构后台返回的分页数据 (如果有分页更新分页信息)
 			const { total = 0 } = res;
 			isPageable && updatePageable({ pageNum: state.pageable.pageNum, pageSize: state.pageable.pageSize, total });
@@ -77,15 +73,15 @@ export const useTable = (
 	 * @description 更新查询参数
 	 * @return void
 	 * */
-	const updatedTotalParam = () => {
+	const updatedTotalParam = (searchParams: any) => {
 		state.totalParam = {};
 		// 处理查询参数，可以给查询参数加自定义前缀操作
 		let nowSearchParam: { [key: string]: any } = {};
 		// 防止手动清空输入框携带参数（这里可以自定义查询参数前缀）
-		for (let key in state.searchParam) {
+		for (let key in searchParams) {
 			// * 某些情况下参数为 false/0 也应该携带参数
-			if (state.searchParam[key] || state.searchParam[key] === false || state.searchParam[key] === 0) {
-				nowSearchParam[key] = state.searchParam[key];
+			if (searchParams[key] || searchParams[key] === false || searchParams[key] === 0) {
+				nowSearchParam[key] = searchParams[key];
 			}
 		}
 		Object.assign(state.totalParam, nowSearchParam, filterPageParams());
@@ -101,28 +97,12 @@ export const useTable = (
 	};
 
 	/**
-	 * @description 表格数据查询
+	 * @description 修改当前分页值
 	 * @return void
 	 * */
-	const search = () => {
-		state.pageable.pageNum = 1;
-		updatedTotalParam();
-		getTableList();
-	};
-
-	/**
-	 * @description 表格数据重置
-	 * @return void
-	 * */
-	const reset = () => {
-		state.pageable.pageNum = 1;
-		state.searchParam = {};
-		// 重置搜索表单的时，如果有默认搜索参数，则重置默认的搜索参数
-		Object.keys(state.searchInitParam).forEach(key => {
-			state.searchParam[key] = state.searchInitParam[key];
-		});
-		updatedTotalParam();
-		getTableList();
+	const handleChangePager = (pageNum: number, pageSize: number = state.pageable.pageSize) => {
+		state.pageable.pageNum = pageNum;
+		state.pageable.pageSize = pageSize;
 	};
 
 	/**
@@ -149,9 +129,9 @@ export const useTable = (
 	return {
 		...toRefs(state),
 		getTableList,
-		search,
-		reset,
 		handleSizeChange,
-		handleCurrentChange
+		handleCurrentChange,
+		handleChangePager,
+		updatedTotalParam
 	};
 };

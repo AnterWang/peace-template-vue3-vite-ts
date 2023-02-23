@@ -1,96 +1,80 @@
 <template>
-	<div class="card table-search" v-if="columns.length">
-		<el-form ref="formRef" :model="searchParam" label-width="auto">
-			<Grid ref="gridRef" :collapsed="collapsed" :gap="[20, 0]" :cols="searchCol">
-				<GridItem v-for="(item, index) in columns" :key="item.prop" v-bind="getResponsive(item)" :index="index">
-					<el-form-item :label="`${item.label} :`">
-						<SearchFormItem :column="item" :searchParam="searchParam" />
-					</el-form-item>
-				</GridItem>
-				<GridItem suffix>
+	<div class="search-form">
+		<el-form ref="formRef" :model="searchParams" :inline="false" label-position="left" label-width="auto">
+			<el-row :gutter="10">
+				<slot name="search"></slot>
+
+				<template v-if="!collapsed">
+					<slot name="searchCollapsed"></slot>
+				</template>
+
+				<el-col :span="colSpan" style="margin-left: auto;">
 					<div class="operation">
 						<el-button type="primary" :icon="Search" @click="search">搜索</el-button>
 						<el-button :icon="Delete" @click="reset">重置</el-button>
-						<el-button v-if="showCollapse" type="primary" link class="search-isOpen" @click="collapsed = !collapsed">
-							{{ collapsed ? "展开" : "合并" }}
-							<el-icon class="el-icon--right">
-								<component :is="collapsed ? ArrowDown : ArrowUp"></component>
-							</el-icon>
-						</el-button>
+						<template v-if="slotSearchCollapsed">
+							<el-button type="primary" link class="search-isOpen" @click="collapsed = !collapsed">
+								{{ collapsed ? "展开" : "收起" }}
+								<el-icon class="el-icon--right">
+									<component :is="collapsed ? ArrowDown : ArrowUp"></component>
+								</el-icon>
+							</el-button>
+						</template>
 					</div>
-				</GridItem>
-			</Grid>
+				</el-col>
+			</el-row>
 		</el-form>
 	</div>
 </template>
 <script setup lang="ts" name="SearchForm">
-import { computed, ref } from "vue";
-import { ColumnProps } from "@/components/ProTable/interface";
-import { BreakPoint } from "@/components/Grid/interface";
+import { computed, ref, useSlots } from "vue";
 import { Delete, Search, ArrowDown, ArrowUp } from "@element-plus/icons-vue";
-import SearchFormItem from "./components/SearchFormItem.vue";
-import Grid from "@/components/Grid/index.vue";
-import GridItem from "@/components/Grid/components/GridItem.vue";
 
-interface ProTableProps {
-	columns?: ColumnProps[]; // 搜索配置列
-	searchParam?: { [key: string]: any }; // 搜索参数
-	searchCol: number | Record<BreakPoint, number>;
-	search: (params: any) => void; // 搜索方法
-	reset: (params: any) => void; // 重置方法
+interface FormProps {
+	searchParams?: { [key: string]: any }; // 搜索参数
+	searchInitParams?: { [key: string]: any }; // 搜索默认参数 （如有）
+	colSpan?: number; // col span值，默认为6，如有修改，外部solt的col值要注意
 }
 
-// 默认值
-const props = withDefaults(defineProps<ProTableProps>(), {
-	columns: () => [],
-	searchParam: () => ({})
+// props
+const props = withDefaults(defineProps<FormProps>(), {
+	searchParams: () => ({}), // v-model:searchParams
+	searchInitParams: () => ({}),
+	colSpan: 6
 });
 
-// 获取响应式设置
-const getResponsive = (item: ColumnProps) => {
-	return {
-		span: item.search?.span,
-		offset: item.search?.offset ?? 0,
-		xs: item.search?.xs,
-		sm: item.search?.sm,
-		md: item.search?.md,
-		lg: item.search?.lg,
-		xl: item.search?.xl
-	};
-};
+// emit
+const emits = defineEmits(['search', 'reset', 'update:searchParams']);
+
+// 搜索
+const search = () => {
+	emits('search')
+}
+
+// 重置
+const reset = () => {
+	let initParams: any = {}
+	// 重置搜索表单的时，如果有默认搜索参数，则重置默认的搜索参数
+	Object.keys(props.searchInitParams).forEach((key) => {
+		initParams[key] = props.searchInitParams[key];
+	});
+	emits('update:searchParams', initParams)
+	emits('reset')
+}
 
 // 是否默认折叠搜索项
 const collapsed = ref(true);
+// 是否有折叠项
+const slotSearchCollapsed = !!useSlots().searchCollapsed;
 
-// 获取响应式断点
-const gridRef = ref();
-const breakPoint = computed<BreakPoint>(() => gridRef.value?.breakPoint);
-
-// 判断是否显示 展开/合并 按钮
-const showCollapse = computed(() => {
-	let show = false;
-	props.columns.reduce((prev, current) => {
-		prev +=
-			(current.search![breakPoint.value]?.span ?? current.search?.span ?? 1) +
-			(current.search![breakPoint.value]?.offset ?? current.search?.offset ?? 0);
-		if (typeof props.searchCol !== "number") {
-			if (prev >= props.searchCol[breakPoint.value]) show = true;
-		} else {
-			if (prev > props.searchCol) show = true;
-		}
-		return prev;
-	}, 0);
-	return show;
-});
 </script>
 
 <style lang="scss" scoped>
-// table-search 表格搜索样式
-.table-search {
-	padding: 18px 18px 0;
-	margin-bottom: 10px;
+// search-form 表格搜索样式
+.search-form {
+	padding-bottom: 0;
 
-	.el-form {
+	:deep(.el-form) {
 
 		.el-input,
 		.el-select,
@@ -111,13 +95,17 @@ const showCollapse = computed(() => {
 			overflow: hidden;
 			white-space: nowrap;
 		}
+
+		.el-form-item__label-wrap {
+			margin-right: 0 !important;
+		}
 	}
 
 	.operation {
 		display: flex;
-		align-items: center;
 		justify-content: flex-end;
-		margin-bottom: 18px;
+		margin-bottom: 15px;
 	}
+
 }
 </style>

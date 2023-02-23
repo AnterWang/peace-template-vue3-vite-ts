@@ -1,9 +1,17 @@
 <template>
-	<SearchForm v-if="isShowSearch" :search="search" :reset="reset" :searchParam="searchParam" :columns="searchColumns"
-		:searchCol="searchCol" v-show="searchShow" />
+	<SearchForm v-if="isShowSearch" v-show="searchShow" @reset="search" @search="search"
+		v-model:searchParams="searchParamsAsyc" :searchInitParams="searchInitParams"
+		:class="{ 'card': cardStyle, 'margin-b': cardStyle }">
+		<template v-if="!!useSlots().search" #search>
+			<slot name="search"></slot>
+		</template>
+		<template v-if="!!useSlots().searchCollapsed" #searchCollapsed>
+			<slot name="searchCollapsed"></slot>
+		</template>
+	</SearchForm>
 
 	<!-- 表格内容 -->
-	<div class="pro-table card">
+	<div class="pro-table" :class="{ 'card': cardStyle }">
 		<!-- 表格头部 操作按钮 -->
 		<div class="table-header">
 			<div class="header-button-lf">
@@ -13,7 +21,7 @@
 			<div class="header-button-ri" v-if="toolButton">
 				<el-button :icon="Refresh" circle @click="getTableList"> </el-button>
 				<el-button :icon="Operation" circle v-if="columns.length" @click="openColSetting"> </el-button>
-				<el-button :icon="Search" circle v-if="searchColumns.length" @click="searchShow = !searchShow"> </el-button>
+				<el-button :icon="Search" circle v-if="isShowSearch" @click="searchShow = !searchShow"> </el-button>
 			</div>
 		</div>
 		<!-- 表格主体 -->
@@ -55,7 +63,7 @@
 </template>
 
 <script setup lang="ts" name="ProTable">
-import { ref, watch, computed, provide, onMounted } from "vue";
+import { ref, watch, computed, provide, onMounted, useSlots } from "vue";
 import { useTable } from "./hooks/useTable";
 import { useSelection } from "./hooks/useSelection";
 import { BreakPoint } from "@/components/Grid/interface";
@@ -63,14 +71,14 @@ import { ColumnProps } from "@/components/ProTable/interface";
 import { ElTable, TableProps } from "element-plus";
 import { Refresh, Printer, Operation, Search } from "@element-plus/icons-vue";
 import { filterEnum, formatValue, handleProp, handleRowAccordingToProp } from "@/utils/util";
-import SearchForm from "@/components/SearchForm/index.vue";
+import SearchForm from "@/components/SearchForm/index.vue"
 import Pagination from "./components/Pagination.vue";
 import ColSetting from "./components/ColSetting.vue";
 import TableColumn from "./components/TableColumn.vue";
 
 // 初始化的时候需要做的事情就是 设置表单查询默认值 && 获取表格数据(reset函数的作用刚好是这两个功能)
 onMounted(() => {
-	reset();
+	search();
 });
 
 interface ProTableProps extends Partial<Omit<TableProps<any>, "data">> {
@@ -79,13 +87,15 @@ interface ProTableProps extends Partial<Omit<TableProps<any>, "data">> {
 	border?: boolean; // 是否带有纵向边框 ==> 非必传（默认为true）
 	toolButton?: boolean; // 是否显示表格功能按钮 ==> 非必传（默认为true）
 	rowKey?: string; // 当表格数据多选时，所指定的 id ==> 非必传（默认为 id）
-	searchCol?: number | Record<BreakPoint, number>; // 表格搜索项 每列占比配置 ==> 非必传 { xs: 1, sm: 2, md: 2, lg: 3, xl: 4 }
-	isShowSearch?: boolean, // 是否显示搜索模块
+	cardStyle?: boolean; // 是否为卡片风格 ==> 非必传（默认为true）
 	// 请求信息参数 v
 	requestApi: (params: any) => Promise<any>; // 请求表格数据的api ==> 必传
 	requestParam?: any; // 初始化请求参数 ==> 非必传（默认为{}
 	requestPageName?: any; // 初始化请求参数 ===> 分页参数名称 ===> 非必传
 	requestCallback?: (data: any) => any; // 返回数据的回调函数，可以对数据进行处理 ==> 非必传
+	// 搜索项
+	searchParams?: any; // 搜索参数 ==> 如需搜索，必传
+	searchInitParams?: any; // 搜索默认参数 ==> 非必传
 }
 
 // 接受父组件参数，配置默认值
@@ -95,11 +105,13 @@ const props = withDefaults(defineProps<ProTableProps>(), {
 	border: true,
 	toolButton: true,
 	rowKey: "id",
-	searchCol: () => ({ xs: 1, sm: 2, md: 2, lg: 3, xl: 4 }),
-	isShowSearch: true,
+	cardStyle: true,
 	// 请求信息参数 v
 	requestParam: {},
 	requestPageName: ['pageNum', 'pageSize'],
+	// 搜索项
+	searchParams: {},
+	searchInitParams: {}
 });
 
 // * --- table --- * //
@@ -108,7 +120,7 @@ const tableRef = ref<InstanceType<typeof ElTable>>();
 // 表格多选 Hooks
 const { selectionChange, selectedList, selectedListIds, isSelected } = useSelection(props.rowKey);
 // 表格操作 Hooks
-const { tableData, pageable, searchParam, searchInitParam, loading, getTableList, search, reset, handleSizeChange, handleCurrentChange } =
+const { tableData, pageable, loading, getTableList, handleSizeChange, handleCurrentChange, handleChangePager, updatedTotalParam } =
 	useTable(props.pagination, props.requestApi, props.requestParam, props.requestPageName, props.requestCallback);
 // 清空选中数据列表
 const clearSelection = () => tableRef.value!.clearSelection();
@@ -149,19 +161,24 @@ const flatColumnsFunc = (columns: ColumnProps[], flatArr: ColumnProps[] = []) =>
 const flatColumns = ref<ColumnProps[]>();
 flatColumns.value = flatColumnsFunc(tableColumns.value as any);
 
+// 搜索
+const search = () => {
+	handleChangePager(1)
+	updatedTotalParam(props.searchParams);
+	getTableList();
+};
+
 // * --- search form --- * //
 const searchShow = ref(true)
-// 过滤需要搜索的配置项 && 处理搜索排序
-const searchColumns = flatColumns.value
-	.filter(item => item.search?.el)
-	.sort((a, b) => (b.search?.order ?? 0) - (a.search?.order ?? 0));
-
-// 设置搜索表单的默认值
-searchColumns.forEach(column => {
-	if (column.search?.defaultValue !== undefined && column.search?.defaultValue !== null) {
-		searchInitParam.value[column.search.key ?? handleProp(column.prop!)] = column.search?.defaultValue;
+const searchParamsAsyc = computed({
+	get() {
+		return props.searchParams
+	},
+	set(value) {
+		emits('update:searchParams', value)
 	}
-});
+})
+const isShowSearch = !!useSlots().search || !!useSlots().searchCollapsed
 
 // * --- toolButton 操作按钮 --- * //
 // 列设置 ==> 过滤掉不需要设置显隐的列
@@ -173,11 +190,14 @@ const openColSetting = () => {
 	colRef.value.openColSetting();
 };
 
+// emit
+const emits = defineEmits(['update:searchParams']);
+
 // 暴露给父组件的参数和方法(外部需要什么，都可以从这里暴露出去)
-defineExpose({ element: tableRef, tableData, searchParam, pageable, getTableList, clearSelection, enumMap });
+defineExpose({ element: tableRef, tableData, pageable, getTableList, clearSelection });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .pro-table {
 
 	/* stylelint-disable-next-line scss/double-slash-comment-empty-line-before */
@@ -191,13 +211,13 @@ defineExpose({ element: tableRef, tableData, searchParam, pageable, getTableList
 			float: right;
 		}
 
-		.el-button {
+		:deep(.el-button) {
 			margin-bottom: 15px;
 		}
 	}
 
 	// el-table 表格样式
-	.el-table {
+	:deep(.el-table) {
 		flex: 1;
 
 		// 修复 safari 浏览器表格错位
@@ -244,11 +264,15 @@ defineExpose({ element: tableRef, tableData, searchParam, pageable, getTableList
 	}
 
 	// 表格 pagination 样式
-	.el-pagination {
+	:deep(.el-pagination) {
 		display: flex;
 		justify-content: flex-end;
 		margin-top: 20px;
 	}
 
+}
+
+.margin-b {
+	margin-bottom: 10px;
 }
 </style>
