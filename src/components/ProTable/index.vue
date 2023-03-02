@@ -1,6 +1,6 @@
 <template>
 	<SearchForm v-if="isShowSearch" v-show="searchShow" @reset="search" @search="search"
-		v-model:searchParams="searchParamsAsyc" :searchInitParams="searchInitParams"
+		v-model:searchParams="searchParamsAsyc" :searchInitParams="searchInitParams" :colSpan="colSpan"
 		:class="{ 'card': cardStyle, 'margin-b': cardStyle }">
 		<template v-if="!!useSlots().search" #search>
 			<slot name="search"></slot>
@@ -96,6 +96,7 @@ interface ProTableProps extends Partial<Omit<TableProps<any>, "data">> {
 	// 搜索项
 	searchParams?: any; // 搜索参数 ==> 如需搜索，必传
 	searchInitParams?: any; // 搜索默认参数 ==> 非必传
+	colSpan?: any; // 非必传
 }
 
 // 接受父组件参数，配置默认值
@@ -111,7 +112,8 @@ const props = withDefaults(defineProps<ProTableProps>(), {
 	requestPageName: ['pageNum', 'pageSize'],
 	// 搜索项
 	searchParams: {},
-	searchInitParams: {}
+	searchInitParams: {},
+	colSpan: 6
 });
 
 // * --- table --- * //
@@ -260,6 +262,11 @@ defineExpose({ element: tableRef, tableData, pageable, getTableList, clearSelect
 			width: 50px;
 			height: 50px;
 			border-radius: 50%;
+		}
+
+		// no-data 
+		.el-scrollbar__wrap {
+			min-height: 130px;
 		}
 	}
 

@@ -35,7 +35,7 @@ export const GlobalStore = defineStore({
 			// 标签页图标
 			tabsIcon: true,
 			// 页脚
-			footer: true,
+			footer: false,
 			// 当前页面是否全屏
 			maximize: false
 		}
