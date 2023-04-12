@@ -59,7 +59,9 @@ const reset = () => {
 		initParams[key] = props.searchInitParams[key];
 	});
 	emits('update:searchParams', initParams)
-	emits('reset')
+	setTimeout(() => {
+		emits('reset')
+	}, 0)
 }
 
 // 是否默认折叠搜索项
